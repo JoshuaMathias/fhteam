@@ -467,7 +467,7 @@ public class Robobit {
 				boolean shouldDo=false;
 				try (Writer truthWriter = new BufferedWriter(
 						new OutputStreamWriter(
-								new FileOutputStream(outFileStr=".truth"), "utf-8"))) {
+								new FileOutputStream(outFileStr+".truth"), "utf-8"))) {
 					truthWriter
 							.write("\"RECORD_ID\",\"PROJECT_ID\",\"IMAGE_ID\",\"IMAGE_TYPE\",\"OPERATOR\",\"UNIQUE_IDENTIFIER\",\"EVENT_TYPE\",\"DGS\",\"CTL_FILE_ID\",\"IMAGE_NBR\",\"GS_NUMBER\",\"DEATH_COUNTY\",\"BIRTH_YEAR\",\"RELATIVE_GN\",\"PR_AGE\",\"PR_SEX_CODE\",\"DEATH_STATE_COUNTRY\",\"RELATIVE_SURN\",\"DEATH_DAY\",\"BIRTH_CITY_TOWN\",\"PR_NAME_SURN\",\"PR_NAME_GN\",\"DEATH_YEAR\",\"RELATIONSHIP_TO_HEAD\",\"BIRTH_MONTH\",\"NEAR_REL_TITLES_TERMS\",\"BIRTH_DAY\",\"PR_TITLES_TERMS\",\"DEATH_MONTH\",\"DEATH_CITY\",\"BIRTH_STATE_COUNTRY\",\"BIRTH_COUNTY\"\n");
 					for (File file : obitFiles) {
