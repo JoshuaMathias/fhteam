@@ -13,6 +13,7 @@ public class Main {
 					.println("Usage: robobit [command] [arguments]\n"
                             + "Commands:"
                             + "parseobits [input file or dir] [output filename (optional)]\t Parses and stores information from obituaries.\n"
+                            + "getobits [input path to obituaries] [input truth files path] [output filename] [number of obituaries to find (default all)]\t Counts and prints to a file obituaries that don't have multiple deceased.\n"
                             + "getmultdec [input path to obituaries] [input truth files path] [output filename] [number of obituaries to find (default all)]\t Counts and prints to a file obituaries with multiple deceased.\n"
                             + "getworddist [input ENEMEX file path] [input truth files path] [output filename]\t Parses the obitaries and prints to a csv file a list of the words with their distances from each name in the obituaries"
                             + "getwordprobs [input learning csv file path] [output file path]\t Creates a probability table for each word in the training data using Weka's Naive Bayes\n"
@@ -33,7 +34,7 @@ public class Main {
 			} else {
 				System.out.println("Usage: getworddist [input ENEMEX file path] [input truth file path] [output filename]");
 			}
-		} else if (args[0].equals("getmultdec")) {
+		} else if (args[0].equals("getmultdec") || args[0].equals("getobits")) {
 			Robobit robobit = new Robobit();
 			String inPath="";
 			String outFile="";
@@ -59,7 +60,11 @@ public class Main {
 			if (args.length > 4) {
 				numMult=Integer.parseInt((args[4]));
 			}
-			robobit.getMultDec(inPath, truthPath, outFile, numMult);
+			boolean isMult=true;
+			if (args[0].equals("getobits")) {
+				isMult=false;
+			}
+			robobit.getMultDec(inPath, truthPath, outFile, numMult, isMult);
 		} else if (args[0].equals("getwordprobs")) {
 			Robobit robobit = new Robobit();
 			String inFile;
