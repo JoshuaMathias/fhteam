@@ -179,11 +179,6 @@ public class Obit {
 	}
 
 	public void addPerson(String person, boolean format) {
-		if(format) {
-          
-        }
-        else
-        {
             person = person.replaceAll("&#034;", "\\\"").replaceAll("&#039;", "\\\'").replaceAll("&#151;", "-");
             String[] personWords = person.split("\\P{L}+");
             if(personWords.length < 2)
@@ -194,9 +189,9 @@ public class Obit {
             if (isDeceased(person)) {
                 deceased = "1";
             }
+//            System.out.println(person);
             String[] personPair = {person, deceased};
             names.add(personPair);
-        }
 	}
 
 	public List<String> getWordListOfBody() {
@@ -211,6 +206,7 @@ public class Obit {
         }
         bodyCopy = bodyCopy.replaceAll("[[,]|[.]|[;]|[:]|[\']|[\"]]+", "");
         bodyCopy = bodyCopy.replaceAll("\\s+", "|");
+//        System.out.println(bodyCopy);
         Iterator it = nameMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();

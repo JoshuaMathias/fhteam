@@ -129,7 +129,7 @@ public class Robobit {
 							.getTaggedBody()
 							.replaceAll(
 									"<[^(>)]*>|\\$|\\%|&#.*;|-|\'|\"|\\[|\\]|\\(|\\)",
-									"").toLowerCase());
+									""));
 					// obits.add(newObit);
 				} else {
 					// System.out.println("obit is null");
@@ -707,12 +707,25 @@ public class Robobit {
 		return true;
 	}
 
+	public int groupDistance(int distance) {
+		if (distance==1) {
+			return 1;
+		} else if (distance<5) {
+			return 2;
+		} else if (distance<10) {
+			return 3;
+		} else if (distance<50) {
+			return 4;
+		} else {
+			return 5;
+		}
+	}
+	
 	public void getWordDistance(String enemexPath, String truthPath,
 			String outputFile) {
 		try {
 			Writer writer = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(outputFile), "utf-8"));
-			System.out.println("Get word distance");
 			truthFilesPath = truthPath;
 			File inFilePath = new File(enemexPath);
 			if (inFilePath.exists()) {
@@ -728,6 +741,7 @@ public class Robobit {
 						List<String> wordList = obit.getWordListOfBody();
 						final int WORD_LIST_DEFAULT = wordList.size() + 100;
 						List<String[]> names = obit.getNames();
+//						System.out.println(names.get(0)[0]);
 						for (int i = 0; i < names.size(); i++) {
 							String[] name = names.get(i);
 							boolean isDeceased = false;
@@ -738,6 +752,7 @@ public class Robobit {
 							// obit.getDeceased().contains(name);
 							for (int j = 0; j < wordList.size(); j++) {
 								int distance = WORD_LIST_DEFAULT;
+//								System.out.println(wordList.get(j));
 								int indexOfName = wordList.indexOf(name[0]);
 								if (indexOfName != -1) {
 									distance = j - indexOfName;
@@ -750,16 +765,20 @@ public class Robobit {
 										if (name[1].equals("0")
 												|| name[1].equals("1")) {
 											String currentWord = wordList
-													.get(j);
-											if (isNumeric(currentWord)
-													&& currentWord.length() == 2) {
-												currentWord = "10";
-
+													.get(j).toLowerCase();
+											if (isNumeric(currentWord)) {
+												if (currentWord.length() < 4) {
+													currentWord = "10";
+												} else if (currentWord.length() == 4) {
+													currentWord = "2000";
+												}
+											} else if (currentWord.contains(" ")) {
+												currentWord="NAME";
 											}
+											
 											String printString = currentWord
-													+ "," + distance + ","
+													+ "," + groupDistance(distance) + ","
 													+ isDeceased + "\n";
-
 											this.writer.write(printString);
 										}
 									}
