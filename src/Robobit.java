@@ -461,7 +461,7 @@ public class Robobit {
 //					writer.write(obitBody);
 //				}
 				for (File file : obitFiles) {
-					if (multipleCount<this.numMult) {
+					if (obitCount<this.numMult) {
 						getFileObits(file);
 						for (Obit obit : obits) {
 							if (obit.isMultDec()) {
