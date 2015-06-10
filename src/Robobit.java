@@ -281,6 +281,9 @@ public class Robobit {
 				}
 				String[] truthData = truthLine.split("\",\"");
 				if (truthData.length > 3) {
+					truthData[0] = truthData[0].replace("\"", "");
+					truthData[truthData.length - 1] = truthData[truthData.length - 1]
+							.replace("\"", "");
 					// Remove parenthesis on id from truth file
 					// truthData[2] = truthData[2].substring(1,
 					// truthData[2].length() - 1);
@@ -464,18 +467,19 @@ public class Robobit {
 				// for (String obitBody : obitBodies) {
 				// writer.write(obitBody);
 				// }
-				boolean shouldDo=false;
+				boolean shouldDo = false;
 				try (Writer truthWriter = new BufferedWriter(
-						new OutputStreamWriter(
-								new FileOutputStream(outFileStr+".truth"), "utf-8"))) {
+						new OutputStreamWriter(new FileOutputStream(outFileStr
+								+ ".truth"), "utf-8"))) {
 					truthWriter
 							.write("\"RECORD_ID\",\"PROJECT_ID\",\"IMAGE_ID\",\"IMAGE_TYPE\",\"OPERATOR\",\"UNIQUE_IDENTIFIER\",\"EVENT_TYPE\",\"DGS\",\"CTL_FILE_ID\",\"IMAGE_NBR\",\"GS_NUMBER\",\"DEATH_COUNTY\",\"BIRTH_YEAR\",\"RELATIVE_GN\",\"PR_AGE\",\"PR_SEX_CODE\",\"DEATH_STATE_COUNTRY\",\"RELATIVE_SURN\",\"DEATH_DAY\",\"BIRTH_CITY_TOWN\",\"PR_NAME_SURN\",\"PR_NAME_GN\",\"DEATH_YEAR\",\"RELATIONSHIP_TO_HEAD\",\"BIRTH_MONTH\",\"NEAR_REL_TITLES_TERMS\",\"BIRTH_DAY\",\"PR_TITLES_TERMS\",\"DEATH_MONTH\",\"DEATH_CITY\",\"BIRTH_STATE_COUNTRY\",\"BIRTH_COUNTY\"\n");
 					for (File file : obitFiles) {
 						if (obitCount < this.numMult) {
 							getFileObits(file);
 							for (Obit obit : obits) {
-								if (isGetMult && obit.isMultDec() || !isGetMult && !obit.isMultDec()) {
-									shouldDo=true;
+								if (isGetMult && obit.isMultDec() || !isGetMult
+										&& !obit.isMultDec()) {
+									shouldDo = true;
 								}
 								if (shouldDo) {
 									if (obit.isMultDec()) {
@@ -488,14 +492,15 @@ public class Robobit {
 												.getTruths();
 										for (String[] truthLine : truths) {
 											for (int i = 0; i < truthLine.length; i++) {
-												truthWriter.write(truthLine[i]);
+												truthWriter.write("\""
+														+ truthLine[i] + "\"");
 												if (i < truthLine.length - 1) {
 													truthWriter.write(",");
 												}
 											}
 											truthWriter.write("\n");
 										}
-										truthWriter.write("+++++");
+										truthWriter.write("+++++\n");
 									}
 								}
 							}
