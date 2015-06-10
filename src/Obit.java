@@ -109,7 +109,7 @@ public class Obit {
 		if (truths != null) {
 			for (String[] truthLine : truths) {
 				if (truthLine.length > 6) {
-					if (truthLine[6].equals("\"Deceased\"")) {
+					if (truthLine[6].equals("Deceased")) {
 						decCount++;
 						if (truthLine.length > 21) {
 							deceased.add(truthLine[20] + truthLine[21]);

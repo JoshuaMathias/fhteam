@@ -13,8 +13,8 @@ public class Main {
 					.println("Usage: robobit [command] [arguments]\n"
                             + "Commands:"
                             + "parseobits [input file or dir] [output filename (optional)]\t Parses and stores information from obituaries.\n"
-                            + "findmultdec [input file or dir] [output filename (optional)]\t Counts and prints to a file obituaries with multiple deceased.\n"
-                            + "getworddist [input ENEMEX file path] [input truth file path] [output filename]\t Parses the obitaries and prints to a csv file a list of the words with their distances from each name in the obituaries"
+                            + "getmultdec [input path to obituaries] [input truth files path] [output filename] [number of obituaries to find (default all)]\t Counts and prints to a file obituaries with multiple deceased.\n"
+                            + "getworddist [input ENEMEX file path] [input truth files path] [output filename]\t Parses the obitaries and prints to a csv file a list of the words with their distances from each name in the obituaries"
                             + "getwordprobs [input learning csv file path] [output file path]\t Creates a probability table for each word in the training data using Weka's Naive Bayes\n"
                             + "guessdecedent [input probability table file (output from getwordprobs)] [input testing ENEMEX file path] [input testing truth file path] [output file path]\t Learns from the probability table and then tests on the testing data. The output file has the results and accuracy");
 		} else if (args[0].equals("parseobits")) {
@@ -33,13 +33,15 @@ public class Main {
 			} else {
 				System.out.println("Usage: getworddist [input ENEMEX file path] [input truth file path] [output filename]");
 			}
-		} else if (args[0].equals("findmultdec")) {
+		} else if (args[0].equals("getmultdec")) {
 			Robobit robobit = new Robobit();
-			String inFile;
-			String outFile;
+			String inPath="";
+			String outFile="";
+			String truthPath="";
+			int numMult=0;
 			try {
 				if (args.length > 1) {
-					inFile = args[1];
+					inPath = args[1];
 				} else {
 					throw new Exception("No input file entered.");
 				}
@@ -47,12 +49,17 @@ public class Main {
 				System.out.println(e);
 				return;
 			}
-			if (args.length > 2) {
-				outFile = args[2];
+			if (args.length > 3) {
+				truthPath=args[2];
+				outFile = args[3];
 			} else {
-				outFile = "multiple_deceased_output.txt";
+//				outFile = "multiple_deceased_output.txt";
+				System.out.println("Please enter the path to the truth files and output file");
 			}
-			robobit.getMultDec(inFile, outFile);
+			if (args.length > 4) {
+				numMult=Integer.parseInt((args[4]));
+			}
+			robobit.getMultDec(inPath, truthPath, outFile, numMult);
 		} else if (args[0].equals("getwordprobs")) {
 			Robobit robobit = new Robobit();
 			String inFile;

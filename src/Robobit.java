@@ -22,6 +22,10 @@ public class Robobit {
 	private int missingTruths;
 	private String truthFilesPath;
 	private Map<String, Map<Double, Double>> probabilityMap;
+	private int normalCount;
+	private int multipleCount;
+	private boolean isMultDec;
+	private int numMult;
 
 	public Robobit() {
 		super();
@@ -31,6 +35,10 @@ public class Robobit {
 		this.obitFiles = new ArrayList<File>();
 		this.obits = new ArrayList<Obit>();
 		this.probabilityMap = new HashMap<String, Map<Double, Double>>();
+		this.normalCount = 0;
+		this.multipleCount = 0;
+		this.isMultDec=false;
+		this.numMult=0;
 	}
 
 	// Get text from file
@@ -85,9 +93,16 @@ public class Robobit {
 					// matchID.group().length() - 4));
 				}
 				if (obit != null) {
-					Matcher matchBody = Pattern.compile(
+					Matcher matchBody=null;
+					if (isMultDec) {
+						matchBody = Pattern.compile(
+								"<UNQ>.*?(\\n.*?)*?</SBODY>").matcher(
+								matchObit.group());
+					} else {
+						matchBody = Pattern.compile(
 							"<SBODY>.*?(\\n.*?)*?</SBODY>").matcher(
 							matchObit.group());
+					}
 
 					if (matchBody.find()) {
 						Matcher matchPerson = Pattern
@@ -101,7 +116,7 @@ public class Robobit {
 											personFound.length() - 9), false);
 						}
 					}
-
+					
 					obit.setTaggedBody(matchBody.group());
 					// obit.setBody(obit.getTaggedBody()
 					// .replaceAll("<[^(>)]*>|\\$|\\%", "")
@@ -404,79 +419,73 @@ public class Robobit {
 		}
 	}
 
-
 	// Print a file containing the obituaries that have multiple deceased
-	public void getMultDec(String inFileStr, String outFileStr) {
+	public void getMultDec(String inFileStr, String truthPathStr, String outFileStr, int numMult) {
+		System.out.println("findMultDec");
 		this.outFileStr = outFileStr;
-		/*
-		 * try (Writer writer = new BufferedWriter(new OutputStreamWriter( new
-		 * FileOutputStream(outFileStr), "utf-8"))) { this.writer = writer;
-		 * this.writer.write("Multiple deceased obituaries\n"); } catch
-		 * (IOException e) { System.out.println("Error writing to file");
-		 * return; }
-		 */
+		this.isMultDec=true;
+		this.numMult=numMult;
+		this.truthFilesPath=truthPathStr;
+		if (this.numMult==0) {
+			this.numMult=Integer.MAX_VALUE;
+		}
+		// try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+		// new FileOutputStream(outFileStr), "utf-8"))) {
+		// this.writer = writer;
+		// this.writer.write("Multiple deceased obituaries\n");
+		// } catch (IOException e) {
+		// System.out.println("Error writing to file");
+		// return;
+		// }
+
 		File inFile = new File(inFileStr);
 		InputStream inStream = null;
 		if (inFile.exists()) {
-			if (inFile.isDirectory()) {
-				System.out.println("Reading directory " + inFileStr);
-				parseFiles(inFile);
-				/*
-				 * for (Obit obit : obits) { if (obit.isMultDec()) {
-				 * obitCount++; obitBodies.add(obit.getBody()); } }
-				 * 
-				 * 
-				 * try (Writer writer = new BufferedWriter(new
-				 * OutputStreamWriter( new FileOutputStream(outFileStr),
-				 * "utf-8"))) {
-				 * writer.write("Number of obituaries with multiple deceased: "
-				 * + obitCount + "\n");
-				 * writer.write("Obituaries with multiple deceased:\n\n"); for
-				 * (String obitBody : obitBodies) { writer.write(obitBody); } }
-				 * catch (IOException e) {
-				 * System.out.println("Error writing to file"); return; }
-				 */
-				try {
-					writer.write("Number of obituaries with multiple deceased: "
-							+ obitCount + "\n");
-					if (missingTruths > 0) {
-						writer.write("Number of missing truth files: "
-								+ missingTruths + "\n");
+			System.out.println("Reading directory " + inFileStr);
+			// parseFiles(inFile);
+			listFiles(inFile);
+//			for (Obit obit : obits) {
+//				if (obit.isMultDec()) {
+//					obitCount++;
+//					obitBodies.add(obit.getBody());
+//				}
+//			}
+
+			try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(outFileStr), "utf-8"))) {
+//				writer.write("Number of obituaries with multiple deceased: "
+//						+ obitCount + "\n");
+				this.writer=writer;
+				writer.write("Obituaries with multiple deceased:\n\n");
+//				for (String obitBody : obitBodies) {
+//					writer.write(obitBody);
+//				}
+				for (File file : obitFiles) {
+					if (multipleCount<this.numMult) {
+						getFileObits(file);
+						for (Obit obit : obits) {
+							if (obit.isMultDec()) {
+								
+								obitCount++;
+								writer.write(obit.getTaggedBody()+"\n\n");
+							}
+						}
 					}
-				} catch (IOException e) {
 				}
-			} else if (inFile.isFile()) {
-				System.out.println("Reading file " + inFileStr
-						+ " with truth file " + inFileStr + ".truth");
-				obitFiles.add(inFile);
-				truths.add(new File(inFileStr + ".truth"));
-				parseFiles(inFile);
-				/*
-				 * try {
-				 * writer.write("Number of obituaries with multiple deceased: "
-				 * + obitCount + "\n"); } catch (IOException e) {
-				 * e.printStackTrace();
-				 * System.out.println("Error writing to file"); //return; }
-				 */
-				/*
-				 * for (Obit obit : obits) { if (obit.isMultDec()) {
-				 * obitCount++; ArrayList<String> deceased=obit.getDeceased();
-				 * String decString="Deceased:\n"; for (String name : deceased)
-				 * { decString+=name+"\n"; } obitBodies.add(obit.getId() + "\n"
-				 * + decString+obit.getBody()); } }
-				 */
-				/*
-				 * try (Writer writer = new BufferedWriter(new
-				 * OutputStreamWriter( new FileOutputStream(outFileStr),
-				 * "utf-8"))) {
-				 * writer.write("Number of obituaries with multiple deceased: "
-				 * + obitCount + "\n");
-				 * writer.write("Obituaries with multiple deceased:\n\n"); for
-				 * (String obitBody : obitBodies) { writer.write(obitBody); } }
-				 * catch (IOException e) {
-				 * System.out.println("Error writing to file"); return; }
-				 */
+			} catch (IOException e) {
+				System.out.println("Error writing to file");
+				return;
 			}
+//
+//			try {
+//				writer.write("Number of obituaries with multiple deceased: "
+//						+ obitCount + "\n");
+//				if (missingTruths > 0) {
+//					writer.write("Number of missing truth files: "
+//							+ missingTruths + "\n");
+//				}
+//			} catch (IOException e) {
+//			}
 			System.out.println("Number of obituaries with multiple deceased: "
 					+ obitCount);
 		} else {
@@ -651,6 +660,15 @@ public class Robobit {
 		}
 	}
 
+	public static boolean isNumeric(String str) {
+		try {
+			double d = Double.parseDouble(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+
 	public void getWordDistance(String enemexPath, String truthPath,
 			String outputFile) {
 		try {
@@ -693,11 +711,17 @@ public class Robobit {
 									} else {
 										if (name[1].equals("0")
 												|| name[1].equals("1")) {
-											String printString = wordList
-													.get(j)
-													+ ","
-													+ distance
-													+ "," + isDeceased + "\n";
+											String currentWord = wordList
+													.get(j);
+											if (isNumeric(currentWord)
+													&& currentWord.length() == 2) {
+												currentWord = "10";
+
+											}
+											String printString = currentWord
+													+ "," + distance + ","
+													+ isDeceased + "\n";
+
 											this.writer.write(printString);
 										}
 									}
@@ -777,7 +801,6 @@ public class Robobit {
 		// parseTruths();
 		getObitsInfo();
 	}
-
 
 	public int getObitCount() {
 		return obitCount;
