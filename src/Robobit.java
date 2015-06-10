@@ -629,7 +629,7 @@ public class Robobit {
 							String[] name = names.get(i);
 							ArrayList<Double> probabilityForName = new ArrayList<Double>();
 							for (int j = 0; j < wordList.size(); j++) {
-								String word = wordList.get(j).toLowerCase();
+								String word = wordList.get(j);
 								int distance = WORD_LIST_DEFAULT;
 								int indexOfName = wordList.indexOf(name[0]);
 								if (indexOfName != -1) {
@@ -765,7 +765,7 @@ public class Robobit {
 										if (name[1].equals("0")
 												|| name[1].equals("1")) {
 											String currentWord = wordList
-													.get(j).toLowerCase();
+													.get(j);
 											if (isNumeric(currentWord)) {
 												if (currentWord.length() < 4) {
 													currentWord = "10";
@@ -819,7 +819,7 @@ public class Robobit {
 				naiveB.setOptions(options);
 				// System.out.println(data.classAttribute());
 				naiveB.buildClassifier(data);
-				Collection<Instance> uniqueInstances = new InstanceSet<Instance>();
+				HashMap<Instance,Integer> uniqueInstances = new InstanceMap<Instance,Integer>();
 				Writer writer = new BufferedWriter(new OutputStreamWriter(
 						new FileOutputStream(outputPath), "utf-8"));
 				// writer.write("Word,Distance,Probability "
@@ -828,17 +828,18 @@ public class Robobit {
 				writer.write("Word,Distance,Probability "
 						+ data.classAttribute().value(1) + "\n");
 				for (int i = 0; i < data.numInstances(); i++) {
-					double[] probs = naiveB.distributionForInstance(data
-							.instance(i));
-					if (!uniqueInstances.contains(data.instance(i))) {
-						// writer.write(data.instance(i).stringValue(0) + ","
-						// + data.instance(i).value(1) + "," + probs[0]
-						// + "," + probs[1] + "\n");
-						writer.write(data.instance(i).stringValue(0) + ","
-								+ data.instance(i).value(1) + "," + probs[1]
-								+ "\n");
+					Instance instance=data.instance(i);
+					double[] probs = naiveB.distributionForInstance(instance);
+					
+					if (!uniqueInstances.containsKey(instance)) {
+						uniqueInstances.put(instance,1);
+					} else if (uniqueInstances.get(instance)==4 && probs[1]>.6 || probs[1]<.4) {
+						writer.write(instance.stringValue(0) + ","
+							+ instance.value(1) + "," + probs[1]
+							+ "\n");
+					} else {
+						uniqueInstances.put(instance, uniqueInstances.get(instance)+1);
 					}
-					uniqueInstances.add(data.instance(i));
 				}
 				// writer.write(naiveB.toString());
 
