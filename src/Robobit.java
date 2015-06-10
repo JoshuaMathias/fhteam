@@ -464,25 +464,46 @@ public class Robobit {
 				// for (String obitBody : obitBodies) {
 				// writer.write(obitBody);
 				// }
-				for (File file : obitFiles) {
-					if (obitCount < this.numMult) {
-						getFileObits(file);
-						for (Obit obit : obits) {
-							if (isGetMult) {
-								if (obit.isMultDec()) {
-
-									obitCount++;
-									writer.write(obit.getTaggedBody() + "\n\n");
+				boolean shouldDo=false;
+				try (Writer truthWriter = new BufferedWriter(
+						new OutputStreamWriter(
+								new FileOutputStream(outFileStr=".truth"), "utf-8"))) {
+					truthWriter
+							.write("\"RECORD_ID\",\"PROJECT_ID\",\"IMAGE_ID\",\"IMAGE_TYPE\",\"OPERATOR\",\"UNIQUE_IDENTIFIER\",\"EVENT_TYPE\",\"DGS\",\"CTL_FILE_ID\",\"IMAGE_NBR\",\"GS_NUMBER\",\"DEATH_COUNTY\",\"BIRTH_YEAR\",\"RELATIVE_GN\",\"PR_AGE\",\"PR_SEX_CODE\",\"DEATH_STATE_COUNTRY\",\"RELATIVE_SURN\",\"DEATH_DAY\",\"BIRTH_CITY_TOWN\",\"PR_NAME_SURN\",\"PR_NAME_GN\",\"DEATH_YEAR\",\"RELATIONSHIP_TO_HEAD\",\"BIRTH_MONTH\",\"NEAR_REL_TITLES_TERMS\",\"BIRTH_DAY\",\"PR_TITLES_TERMS\",\"DEATH_MONTH\",\"DEATH_CITY\",\"BIRTH_STATE_COUNTRY\",\"BIRTH_COUNTY\"\n");
+					for (File file : obitFiles) {
+						if (obitCount < this.numMult) {
+							getFileObits(file);
+							for (Obit obit : obits) {
+								if (isGetMult && obit.isMultDec() || !isGetMult && !obit.isMultDec()) {
+									shouldDo=true;
 								}
-							} else {
-								if (!obit.isMultDec()) {
+								if (shouldDo) {
+									if (obit.isMultDec()) {
 
-									obitCount++;
-									writer.write(obit.getTaggedBody() + "\n\n");
+										obitCount++;
+										writer.write(obit.getTaggedBody()
+												+ "\n\n");
+
+										ArrayList<String[]> truths = obit
+												.getTruths();
+										for (String[] truthLine : truths) {
+											for (int i = 0; i < truthLine.length; i++) {
+												truthWriter.write(truthLine[i]);
+												if (i < truthLine.length - 1) {
+													truthWriter.write(",");
+												}
+											}
+											truthWriter.write("\n");
+										}
+										truthWriter.write("+++++");
+									}
 								}
 							}
 						}
 					}
+				} catch (IOException e) {
+					System.out.println("Error making new truth file");
+					return;
 				}
 			} catch (IOException e) {
 				System.out.println("Error writing to file");
