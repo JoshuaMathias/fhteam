@@ -632,6 +632,7 @@ public class Robobit {
 							probDeceased = 0;
 							probNotDeceased = 0;
 							String[] name = names.get(i);
+							System.out.println("Name: "+name[0]);
 							ArrayList<Double> probabilityForName = new ArrayList<Double>();
 							for (int j = 0; j < wordList.size(); j++) {
 								String word = wordList.get(j);
@@ -664,30 +665,55 @@ public class Robobit {
 									}
 								}
 							}
-							boolean predictIsDeceased = false;
-							double probAverage = 0.0;
+							String predictIsDeceased = "0";
+							// double probAverage = 0.0;
+							double probSum = 0.0;
+							double probFalseSum = 0.0;
+							double currentProb=0.0;
 							for (int probIter = 0; probIter < probabilityForName
 									.size(); probIter++) {
-								probAverage += probabilityForName.get(probIter);
+								currentProb=probabilityForName
+										.get(probIter);
+								probSum += Math.log(1 - currentProb)
+										- Math.log(currentProb);
+								probFalseSum += Math
+										.log(1 - (1 - currentProb))
+										- (1 - currentProb);
+								// probAverage +=
+								// probabilityForName.get(probIter);
 							}
-							probAverage = probAverage
-									/ probabilityForName.size();
+							probDeceased=1/(1+Math.pow(Math.E,probSum));
+							probNotDeceased=1/(1+Math.pow(Math.E,probFalseSum));
+//							System.out.println("deceased: "+probDeceased+" not deceased: "+probNotDeceased);
+							if (probDeceased>probNotDeceased) {
+								predictIsDeceased="1";
+							}
+							// probAverage = probAverage
+							// / probabilityForName.size();
 							// if (probAverage > probabilityThatNameIsDecedent)
 							// {
 							// probabilityThatNameIsDecedent = probAverage;
 							// decedentName = name[0];
 							// }
+							if (name[1]==predictIsDeceased) {
+								correctGuesses++;
+								totalGuesses++;
+								// this.writer.write("1");
+							} else {
+								totalGuesses++;
+								// this.writer.write("0");
+							}
 
 						}
 
-						if (obit.isDeceased(decedentName)) {
-							correctGuesses++;
-							totalGuesses++;
-							// this.writer.write("1");
-						} else {
-							totalGuesses++;
-							// this.writer.write("0");
-						}
+//						if (obit.isDeceased(decedentName)) {
+//							correctGuesses++;
+//							totalGuesses++;
+//							// this.writer.write("1");
+//						} else {
+//							totalGuesses++;
+//							// this.writer.write("0");
+//						}
 					}
 				}
 				double accuracy = (double) correctGuesses
@@ -717,24 +743,24 @@ public class Robobit {
 	}
 
 	public int groupDistance(int distance) {
-		if (distance>=0) {
-		if (distance <= 1) {
-			return 1;
-		} else if (distance < 5) {
-			return 2;
-		} else if (distance < 10) {
-			return 3;
-		} else if (distance < 50) {
-			return 4;
+		if (distance >= 0) {
+			if (distance <= 1) {
+				return 1;
+			} else if (distance < 5) {
+				return 2;
+			} else if (distance < 10) {
+				return 3;
+			} else if (distance < 50) {
+				return 4;
+			} else {
+				return 5;
+			}
 		} else {
-			return 5;
-		}
-		} else {
-			if (distance>-5) {
+			if (distance > -5) {
 				return -1;
-			} else if (distance>-10){
+			} else if (distance > -10) {
 				return -2;
-			} else if (distance>-50){
+			} else if (distance > -50) {
 				return -3;
 			} else {
 				return -4;
