@@ -825,18 +825,25 @@ public class Robobit {
 				// writer.write("Word,Distance,Probability "
 				// + data.classAttribute().value(0) + ",Probability "
 				// + data.classAttribute().value(1) + "\n");
+				int whichProb=0;
+				if (data.classAttribute().value(1).equals("true")) {
+					whichProb=1;
+				}
+//				System.out.println(whichProb);
 				writer.write("Word,Distance,Probability "
-						+ data.classAttribute().value(1) + "\n");
+						+ data.classAttribute().value(whichProb) + "\n");
 				for (int i = 0; i < data.numInstances(); i++) {
 					Instance instance=data.instance(i);
 					double[] probs = naiveB.distributionForInstance(instance);
 					
 					if (!uniqueInstances.containsKey(instance)) {
+//						System.out.println("Doesn't contain: "+instance.stringValue(0)+ " "+instance.value(1));
 						uniqueInstances.put(instance,1);
-					} else if (uniqueInstances.get(instance)==4 && probs[1]>.6 || probs[1]<.4) {
+					} else if (uniqueInstances.get(instance)==4 && (probs[whichProb]>.6 || probs[whichProb]<.4)) {
 						writer.write(instance.stringValue(0) + ","
-							+ instance.value(1) + "," + probs[1]
+							+ instance.value(1) + "," + probs[whichProb]
 							+ "\n");
+						uniqueInstances.put(instance, uniqueInstances.get(instance)+1);
 					} else {
 						uniqueInstances.put(instance, uniqueInstances.get(instance)+1);
 					}
