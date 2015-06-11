@@ -125,11 +125,9 @@ public class Robobit {
 					// .replaceAll("&#034;", "\\\"")
 					// .replaceAll("&#039;", "\\\'")
 					// .replaceAll("&#151;", "-").replaceAll("&#.*;", ""));
-					obit.setBody(obit
-							.getTaggedBody()
-							.replaceAll(
-									"<[^(>)]*>|\\$|\\%|&#.*;|-|\'|\"|\\[|\\]|\\(|\\)",
-									""));
+					obit.setBody(obit.getTaggedBody().replaceAll(
+							"<[^(>)]*>|\\$|\\%|&#.*;|-|\'|\"|\\[|\\]|\\(|\\)",
+							""));
 					// obits.add(newObit);
 				} else {
 					// System.out.println("obit is null");
@@ -565,21 +563,21 @@ public class Robobit {
 						HashMap<Double, Double> distancePair = new HashMap<Double, Double>();
 						distancePair.put(Double.parseDouble(lineSplit[1]),
 								Double.parseDouble(lineSplit[2]));
-						if (lineSplit[0].toLowerCase().equals("age"))
-							System.out.println("Put word: "
-									+ lineSplit[0].toLowerCase());
+						// if (lineSplit[0].toLowerCase().equals("age"))
+						// System.out.println("Put word: "
+						// + lineSplit[0].toLowerCase());
 						this.probabilityMap.put(lineSplit[0].toLowerCase(),
 								distancePair);
 					}
-					if (lineSplit[0].equals("age")
-							&& lineSplit[1].equals("1.0")) {
-
-						this.probabilityMap.get("age");
-
-					}
-					if (lineSplit[0].equals("age")) {
-						this.probabilityMap.get("age");
-					}
+					// if (lineSplit[0].equals("age")
+					// && lineSplit[1].equals("1.0")) {
+					//
+					// this.probabilityMap.get("age");
+					//
+					// }
+					// if (lineSplit[0].equals("age")) {
+					// this.probabilityMap.get("age");
+					// }
 				}
 				// if (this.probabilityMap!=null &&
 				// this.probabilityMap.get("age")!=null)
@@ -614,6 +612,9 @@ public class Robobit {
 				int correctGuesses = 0;
 				int totalGuesses = 0;
 				final double MIN_PROB = 0.0000000001;
+				double probabilityThatNameIsDecedent = 0.0;
+				double probDeceased = 0;
+				double probNotDeceased = 0;
 				for (File file : obitFiles) {
 					getFileObits(file);
 					for (Obit obit : this.obits) {
@@ -624,8 +625,12 @@ public class Robobit {
 						if (obit.getNames().size() > 0) {
 							decedentName = obit.getNames().get(0)[0];
 						}
-						double probabilityThatNameIsDecedent = 0.0;
+						probabilityThatNameIsDecedent = 0.0;
+						probDeceased = 0;
+						probNotDeceased = 0;
 						for (int i = 0; i < names.size(); i++) {
+							probDeceased = 0;
+							probNotDeceased = 0;
 							String[] name = names.get(i);
 							ArrayList<Double> probabilityForName = new ArrayList<Double>();
 							for (int j = 0; j < wordList.size(); j++) {
@@ -647,17 +652,19 @@ public class Robobit {
 														.add(this.probabilityMap
 																.get(word)
 																.get((double) distance));
-											} else {
-												probabilityForName
-														.add(MIN_PROB);
 											}
-										} else {
-											probabilityForName.add(MIN_PROB);
+											// else {
+											// probabilityForName
+											// .add(MIN_PROB);
+											// }
 										}
+										// else {
+										// probabilityForName.add(MIN_PROB);
+										// }
 									}
 								}
 							}
-
+							boolean predictIsDeceased = false;
 							double probAverage = 0.0;
 							for (int probIter = 0; probIter < probabilityForName
 									.size(); probIter++) {
@@ -665,10 +672,12 @@ public class Robobit {
 							}
 							probAverage = probAverage
 									/ probabilityForName.size();
-							if (probAverage > probabilityThatNameIsDecedent) {
-								probabilityThatNameIsDecedent = probAverage;
-								decedentName = name[0];
-							}
+							// if (probAverage > probabilityThatNameIsDecedent)
+							// {
+							// probabilityThatNameIsDecedent = probAverage;
+							// decedentName = name[0];
+							// }
+
 						}
 
 						if (obit.isDeceased(decedentName)) {
@@ -708,19 +717,31 @@ public class Robobit {
 	}
 
 	public int groupDistance(int distance) {
-		if (distance==1) {
+		if (distance>=0) {
+		if (distance <= 1) {
 			return 1;
-		} else if (distance<5) {
+		} else if (distance < 5) {
 			return 2;
-		} else if (distance<10) {
+		} else if (distance < 10) {
 			return 3;
-		} else if (distance<50) {
+		} else if (distance < 50) {
 			return 4;
 		} else {
 			return 5;
 		}
+		} else {
+			if (distance>-5) {
+				return -1;
+			} else if (distance>-10){
+				return -2;
+			} else if (distance>-50){
+				return -3;
+			} else {
+				return -4;
+			}
+		}
 	}
-	
+
 	public void getWordDistance(String enemexPath, String truthPath,
 			String outputFile) {
 		try {
@@ -741,7 +762,7 @@ public class Robobit {
 						List<String> wordList = obit.getWordListOfBody();
 						final int WORD_LIST_DEFAULT = wordList.size() + 100;
 						List<String[]> names = obit.getNames();
-//						System.out.println(names.get(0)[0]);
+						// System.out.println(names.get(0)[0]);
 						for (int i = 0; i < names.size(); i++) {
 							String[] name = names.get(i);
 							boolean isDeceased = false;
@@ -752,7 +773,7 @@ public class Robobit {
 							// obit.getDeceased().contains(name);
 							for (int j = 0; j < wordList.size(); j++) {
 								int distance = WORD_LIST_DEFAULT;
-//								System.out.println(wordList.get(j));
+								// System.out.println(wordList.get(j));
 								int indexOfName = wordList.indexOf(name[0]);
 								if (indexOfName != -1) {
 									distance = j - indexOfName;
@@ -765,20 +786,22 @@ public class Robobit {
 										if (name[1].equals("0")
 												|| name[1].equals("1")) {
 											String currentWord = wordList
-													.get(j);
+													.get(j).toLowerCase();
 											if (isNumeric(currentWord)) {
 												if (currentWord.length() < 4) {
 													currentWord = "10";
 												} else if (currentWord.length() == 4) {
 													currentWord = "2000";
 												}
-											} else if (currentWord.contains(" ")) {
-												currentWord="NAME";
+											} else if (currentWord
+													.contains(" ")) {
+												currentWord = "NAME";
 											}
-											
+
 											String printString = currentWord
-													+ "," + groupDistance(distance) + ","
-													+ isDeceased + "\n";
+													+ ","
+													+ groupDistance(distance)
+													+ "," + isDeceased + "\n";
 											this.writer.write(printString);
 										}
 									}
@@ -819,33 +842,37 @@ public class Robobit {
 				naiveB.setOptions(options);
 				// System.out.println(data.classAttribute());
 				naiveB.buildClassifier(data);
-				HashMap<Instance,Integer> uniqueInstances = new InstanceMap<Instance,Integer>();
+				HashMap<Instance, Integer> uniqueInstances = new InstanceMap<Instance, Integer>();
 				Writer writer = new BufferedWriter(new OutputStreamWriter(
 						new FileOutputStream(outputPath), "utf-8"));
 				// writer.write("Word,Distance,Probability "
 				// + data.classAttribute().value(0) + ",Probability "
 				// + data.classAttribute().value(1) + "\n");
-				int whichProb=0;
+				int whichProb = 0;
 				if (data.classAttribute().value(1).equals("true")) {
-					whichProb=1;
+					whichProb = 1;
 				}
-//				System.out.println(whichProb);
+				// System.out.println(whichProb);
 				writer.write("Word,Distance,Probability "
 						+ data.classAttribute().value(whichProb) + "\n");
 				for (int i = 0; i < data.numInstances(); i++) {
-					Instance instance=data.instance(i);
+					Instance instance = data.instance(i);
 					double[] probs = naiveB.distributionForInstance(instance);
-					
+
 					if (!uniqueInstances.containsKey(instance)) {
-//						System.out.println("Doesn't contain: "+instance.stringValue(0)+ " "+instance.value(1));
-						uniqueInstances.put(instance,1);
-					} else if (uniqueInstances.get(instance)==4 && (probs[whichProb]>.6 || probs[whichProb]<.4)) {
+						// System.out.println("Doesn't contain: "+instance.stringValue(0)+
+						// " "+instance.value(1));
+						uniqueInstances.put(instance, 1);
+					} else if (uniqueInstances.get(instance) == 4
+							&& (probs[whichProb] > .6 || probs[whichProb] < .4)) {
 						writer.write(instance.stringValue(0) + ","
-							+ instance.value(1) + "," + probs[whichProb]
-							+ "\n");
-						uniqueInstances.put(instance, uniqueInstances.get(instance)+1);
+								+ instance.value(1) + "," + probs[whichProb]
+								+ "\n");
+						uniqueInstances.put(instance,
+								uniqueInstances.get(instance) + 1);
 					} else {
-						uniqueInstances.put(instance, uniqueInstances.get(instance)+1);
+						uniqueInstances.put(instance,
+								uniqueInstances.get(instance) + 1);
 					}
 				}
 				// writer.write(naiveB.toString());
