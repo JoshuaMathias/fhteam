@@ -818,6 +818,8 @@ public class Robobit {
 													currentWord = "10";
 												} else if (currentWord.length() == 4) {
 													currentWord = "2000";
+												} else {
+													currentWord = "NUMBER";
 												}
 											} else if (currentWord
 													.contains(" ")) {
@@ -868,6 +870,7 @@ public class Robobit {
 				naiveB.setOptions(options);
 				// System.out.println(data.classAttribute());
 				naiveB.buildClassifier(data);
+				System.out.println("Built classifier");
 				HashMap<Instance, Integer> uniqueInstances = new InstanceMap<Instance, Integer>();
 				Writer writer = new BufferedWriter(new OutputStreamWriter(
 						new FileOutputStream(outputPath), "utf-8"));
@@ -889,7 +892,7 @@ public class Robobit {
 						// System.out.println("Doesn't contain: "+instance.stringValue(0)+
 						// " "+instance.value(1));
 						uniqueInstances.put(instance, 1);
-					} else if (uniqueInstances.get(instance) == 4
+					} else if (uniqueInstances.get(instance) == 10
 							&& (probs[whichProb] > .6 || probs[whichProb] < .4)) {
 						writer.write(instance.stringValue(0) + ","
 								+ instance.value(1) + "," + probs[whichProb]
