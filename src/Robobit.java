@@ -632,7 +632,7 @@ public class Robobit {
 							probDeceased = 0;
 							probNotDeceased = 0;
 							String[] name = names.get(i);
-							System.out.println("Name: "+name[0]);
+//							System.out.println("Name: "+name[0]);
 							ArrayList<Double> probabilityForName = new ArrayList<Double>();
 							for (int j = 0; j < wordList.size(); j++) {
 								String word = wordList.get(j);
