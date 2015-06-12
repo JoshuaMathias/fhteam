@@ -89,9 +89,18 @@ public class Main {
         else if (args[0].equals("guessdecedent")) {
             Robobit robobit = new Robobit();
             try {
-                robobit.guessDecedent(args[1], args[2], args[3], args[4]);
+                robobit.guessDecedent(args[1], args[2], args[3], args[4], false);
             } catch (Exception e) {
                 System.out.println("Usage: guessdecedent [input probability table file (output from getwordprobs)] [input testing ENEMEX file path] [input testing truth file path] [output file path]\t Learns from the probability table and then tests on the testing data. The output file has the results and accuracy");
+                e.printStackTrace();
+            }
+        }
+        else if (args[0].equals("base")) {
+            Robobit robobit = new Robobit();
+            try {
+                robobit.guessDecedent(args[1], args[2], args[3], args[4], true);
+            } catch (Exception e) {
+                System.out.println("Usage: base [input probability table file (output from getwordprobs)] [input testing ENEMEX file path] [input testing truth file path] [output file path]\t Learns from the probability table and then tests on the testing data. The output file has the results and accuracy");
                 e.printStackTrace();
             }
         }
