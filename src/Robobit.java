@@ -374,54 +374,6 @@ public class Robobit {
 		}
 	}
 
-	// Deprecated. Use listFiles instead.
-	@Deprecated
-	private void readDirectory(File directoryName) {
-
-		for (File currentFile : directoryName.listFiles()) {
-			InputStream inStream = null;
-			if (currentFile.isFile()) {
-				try {
-					inStream = new FileInputStream(currentFile);
-					String fileString = readStream(inStream);
-					ArrayList<String> obitBodies = getBodyTexts(fileString);
-				} catch (FileNotFoundException e1) {
-					System.out.println("File " + currentFile.getName()
-							+ " not found");
-				}
-			} else if (currentFile.isDirectory()) {
-				readDirectory(currentFile);
-			}
-		}
-	}
-
-	// Deprecated. Only for counting the number of obituaries.
-	@Deprecated
-	public void parseObits(String obitFileName) {
-		File obitFile = new File(obitFileName);
-		InputStream inStream = null;
-		if (obitFile.exists()) {
-			if (obitFile.isDirectory()) {
-				System.out.println("Reading directory " + obitFileName);
-				readDirectory(obitFile);
-			} else if (obitFile.isFile()) {
-				System.out.println("Reading file " + obitFileName);
-				try {
-					inStream = new FileInputStream(obitFile);
-					String fileString = readStream(inStream);
-					getBodyTexts(fileString);
-				} catch (FileNotFoundException e1) {
-					System.out.println("Input file not found");
-					return;
-				}
-			}
-			System.out.println("Total number of obituaries: " + obitCount);
-			System.out.println("Max number of obituaries in a file: " + max);
-		} else {
-			System.out.println("Input path or file not found");
-		}
-	}
-
 	// Print a file containing the obituaries that have multiple deceased
 	public void getMultDec(String inFileStr, String truthPathStr,
 			String outFileStr, int numMult, boolean isMult) {
@@ -637,77 +589,77 @@ public class Robobit {
 						if (names.size() > 0) {
 							decedentGuess = names.get(0);
 						}
-						for (int i = 0; i < names.size(); i++) {
-							probDeceased = 0;
-							// probNotDeceased = 0;
-							String[] name = names.get(i);
-							// System.out.println("Name: "+name[0]);
-							ArrayList<Double> probabilityForName = new ArrayList<Double>();
-							for (int j = 0; j < wordList.size(); j++) {
-								String word = groupWord(wordList.get(j));
-								int distance = WORD_LIST_DEFAULT;
-								int indexOfName = wordList.indexOf(name[0]);
-								if (indexOfName != -1) {
-									distance = j - indexOfName;
-								}
-								distance = this.groupDistance(distance);
-								if (distance != 0) {
-									if (distance != WORD_LIST_DEFAULT) {
-										if (this.probabilityMap
-												.containsKey(word)) {
-											Map<Double, Double> distancePair = this.probabilityMap
-													.get(word);
-											if (distancePair
-													.containsKey((double) distance)) {
-												probabilityForName
-														.add(this.probabilityMap
-																.get(word)
-																.get((double) distance));
+						if (!isBase) {
+							for (int i = 0; i < names.size(); i++) {
+								probDeceased = 0;
+								// probNotDeceased = 0;
+								String[] name = names.get(i);
+								// System.out.println("Name: "+name[0]);
+								ArrayList<Double> probabilityForName = new ArrayList<Double>();
+								for (int j = 0; j < wordList.size(); j++) {
+									String word = groupWord(wordList.get(j));
+									int distance = WORD_LIST_DEFAULT;
+									int indexOfName = wordList.indexOf(name[0]);
+									if (indexOfName != -1) {
+										distance = j - indexOfName;
+									}
+									distance = this.groupDistance(distance);
+									if (distance != 0) {
+										if (distance != WORD_LIST_DEFAULT) {
+											if (this.probabilityMap
+													.containsKey(word)) {
+												Map<Double, Double> distancePair = this.probabilityMap
+														.get(word);
+												if (distancePair
+														.containsKey((double) distance)) {
+													probabilityForName
+															.add(this.probabilityMap
+																	.get(word)
+																	.get((double) distance));
+												}
+												// else {
+												// probabilityForName
+												// .add(MIN_PROB);
+												// }
 											}
 											// else {
-											// probabilityForName
-											// .add(MIN_PROB);
+											// probabilityForName.add(MIN_PROB);
 											// }
 										}
-										// else {
-										// probabilityForName.add(MIN_PROB);
-										// }
 									}
 								}
-							}
-							String predictIsDeceased = "0";
-							double probAverage = 0.0;
-							if (!isBase) {
+								String predictIsDeceased = "0";
+								double probAverage = 0.0;
 								if (probabilityForName.size() > 0) {
 									double probSum = 0.0;
 									double probFalseSum = 0.0;
 									double currentProb = 0.0;
 									for (int probIter = 0; probIter < probabilityForName
 											.size(); probIter++) {
-										 currentProb =
-										 probabilityForName.get(probIter);
-										 probSum += Math.log(1 - currentProb)
-										 - Math.log(currentProb);
+										currentProb = probabilityForName
+												.get(probIter);
+										// probSum += Math.log(1 - currentProb)
+										// - Math.log(currentProb);
 										// probFalseSum += Math.log(currentProb)
 										// - Math.log(1 - currentProb);
-//										probAverage += probabilityForName
-//												.get(probIter);
+										probAverage += probabilityForName
+												.get(probIter);
 									}
-//									probAverage = probAverage
-//											/ probabilityForName.size();
-									if (probSum > probabilityThatNameIsDecedent) {
-//									if (probAverage > probabilityThatNameIsDecedent) {
-										currentProbOfName = probSum;
+									probAverage = probAverage
+											/ probabilityForName.size();
+									if (probAverage > probabilityThatNameIsDecedent) {
+										// if (probAverage >
+										// probabilityThatNameIsDecedent) {
+										currentProbOfName = probAverage;
 										decedentName = name[0];
-										 probDeceased = 1 / (1 +
-										 Math.pow(Math.E,
-										 probSum));
-//										 probNotDeceased = 1 / (1 +
-//										 Math.pow(Math.E, probFalseSum));
-//										 System.out.println("deceased: " +
-//										 probDeceased
-//										 + " not deceased: " +
-//										 probNotDeceased);
+										probDeceased = 1 / (1 + Math.pow(
+												Math.E, probSum));
+										// probNotDeceased = 1 / (1 +
+										// Math.pow(Math.E, probFalseSum));
+										// System.out.println("deceased: " +
+										// probDeceased
+										// + " not deceased: " +
+										// probNotDeceased);
 										if (probDeceased > currentProbOfName) {
 											// predictedDeceased++;
 											// predictIsDeceased = "1";
@@ -727,26 +679,31 @@ public class Robobit {
 									}
 
 								}
-
-								// if (obit.isDeceased(decedentName)) {
-								// correctGuesses++;
-								// totalGuesses++;
-								// // this.writer.write("1");
-								// } else {
-								// totalGuesses++;
-								// // this.writer.write("0");
-								// }
 							}
-							if (decedentGuess != null) {
-								// if (decedentGuess[1] == "1") {
-								// totalDeceased++;
-								// }
-								totalGuesses++;
-								if (decedentGuess[1] == "1") {
-									correctGuesses++;
-									// this.writer.write("1");
-								} 
+							// if (obit.isDeceased(decedentName)) {
+							// correctGuesses++;
+							// totalGuesses++;
+							// // this.writer.write("1");
+							// } else {
+							// totalGuesses++;
+							// // this.writer.write("0");
+							// }
+						} else {
+							if (names.size() > 0) {
+								decedentGuess = names.get(0);
 							}
+						}
+						if (decedentGuess != null) {
+							// if (decedentGuess[1] == "1") {
+							// totalDeceased++;
+							// }
+							totalGuesses++;
+							if (decedentGuess[1] == "1") {
+								correctGuesses++;
+								// this.writer.write("1");
+							}
+						} else {
+							randomGuesses++;
 						}
 					}
 				}
@@ -759,14 +716,18 @@ public class Robobit {
 				// + totalGuesses);
 				// this.writer.write("\nTotal deceased/total guesses: "
 				// + (double) correctGuesses / (double) totalGuesses);
-//				this.writer
-//						.write("\nRandom guesses (no corresponding probabilities to evaluate): "
-//								+ randomGuesses
-//								+ " = "
-//								+ (double) randomGuesses
-//								/ (double) totalGuesses + "%");
-				this.writer.write("\nTotal names predicted as deceased: "
-						+ predictedDeceased);
+				// this.writer
+				// .write("\nRandom guesses (no corresponding probabilities to evaluate): "
+				// + randomGuesses
+				// + " = "
+				// + (double) randomGuesses
+				// / (double) totalGuesses + "%");
+				this.writer.write("\nTotal number of obituaries predicted: "
+						+ totalGuesses);
+				this.writer
+						.write("\nTotal number of obituaries that could not be predicted (no corresponding probabilities to evaluate): "
+								+ randomGuesses);
+				this.writer.write("\n");
 			} else {
 				System.out.println("Enamex file path doesn't exist");
 			}
@@ -876,7 +837,7 @@ public class Robobit {
 												|| name[1].equals("1")) {
 											String currentWord = wordList
 													.get(j).toLowerCase();
-											currentWord=groupWord(currentWord);
+											currentWord = groupWord(currentWord);
 
 											String printString = currentWord
 													+ ","
