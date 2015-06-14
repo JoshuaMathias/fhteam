@@ -12,20 +12,11 @@ public class Main {
 			System.out
 					.println("Usage: robobit [command] [arguments]\n"
                             + "Commands:"
-                            + "parseobits [input file or dir] [output filename (optional)]\t Parses and stores information from obituaries.\n"
                             + "getobits [input path to obituaries] [input truth files path] [output filename] [number of obituaries to find (default all)]\t Counts and prints to a file obituaries that don't have multiple deceased.\n"
                             + "getmultdec [input path to obituaries] [input truth files path] [output filename] [number of obituaries to find (default all)]\t Counts and prints to a file obituaries with multiple deceased.\n"
                             + "getworddist [input ENEMEX file path] [input truth files path] [output filename]\t Parses the obitaries and prints to a csv file a list of the words with their distances from each name in the obituaries"
                             + "getwordprobs [input learning csv file path] [output file path]\t Creates a probability table for each word in the training data using Weka's Naive Bayes\n"
                             + "guessdecedent [input probability table file (output from getwordprobs)] [input testing ENEMEX file path] [input testing truth file path] [output file path]\t Learns from the probability table and then tests on the testing data. The output file has the results and accuracy");
-		} else if (args[0].equals("parseobits")) {
-			if (args.length > 1) {
-				Robobit robobit = new Robobit();
-				robobit.parseObits(args[1]);
-			} else {
-				System.out
-                        .println("Usage: parseobits [input filename] [output filename (optional)]");
-			}
 		} else if (args[0].equals("getworddist")) {
 			if (args.length > 3) {
 				System.out.println("Getting word distances...");
