@@ -210,7 +210,7 @@ public class Obit {
         Iterator it = nameMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            bodyCopy = bodyCopy.replace((String) pair.getKey(), ((String) pair.getValue()).replaceAll(",|'|\"", ""));
+            bodyCopy = bodyCopy.replace((String) pair.getKey(), ((String) pair.getValue()));
         }
         List<String> wordList = Arrays.asList(bodyCopy.split("\\|"));
         return wordList;
