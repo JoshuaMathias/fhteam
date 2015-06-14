@@ -684,29 +684,30 @@ public class Robobit {
 									double currentProb = 0.0;
 									for (int probIter = 0; probIter < probabilityForName
 											.size(); probIter++) {
-										// currentProb =
-										// probabilityForName.get(probIter);
-										// probSum += Math.log(1 - currentProb)
-										// - Math.log(currentProb);
+										 currentProb =
+										 probabilityForName.get(probIter);
+										 probSum += Math.log(1 - currentProb)
+										 - Math.log(currentProb);
 										// probFalseSum += Math.log(currentProb)
 										// - Math.log(1 - currentProb);
-										probAverage += probabilityForName
-												.get(probIter);
+//										probAverage += probabilityForName
+//												.get(probIter);
 									}
-									probAverage = probAverage
-											/ probabilityForName.size();
-									if (probAverage > probabilityThatNameIsDecedent) {
-										currentProbOfName = probAverage;
+//									probAverage = probAverage
+//											/ probabilityForName.size();
+									if (probSum > probabilityThatNameIsDecedent) {
+//									if (probAverage > probabilityThatNameIsDecedent) {
+										currentProbOfName = probSum;
 										decedentName = name[0];
-										// probDeceased = 1 / (1 +
-										// Math.pow(Math.E,
-										// probSum));
-										// probNotDeceased = 1 / (1 +
-										// Math.pow(Math.E, probFalseSum));
-										// System.out.println("deceased: " +
-										// probDeceased
-										// + " not deceased: " +
-										// probNotDeceased);
+										 probDeceased = 1 / (1 +
+										 Math.pow(Math.E,
+										 probSum));
+//										 probNotDeceased = 1 / (1 +
+//										 Math.pow(Math.E, probFalseSum));
+//										 System.out.println("deceased: " +
+//										 probDeceased
+//										 + " not deceased: " +
+//										 probNotDeceased);
 										if (probDeceased > currentProbOfName) {
 											// predictedDeceased++;
 											// predictIsDeceased = "1";
@@ -740,14 +741,11 @@ public class Robobit {
 								// if (decedentGuess[1] == "1") {
 								// totalDeceased++;
 								// }
+								totalGuesses++;
 								if (decedentGuess[1] == "1") {
 									correctGuesses++;
-									totalGuesses++;
 									// this.writer.write("1");
-								} else {
-									totalGuesses++;
-									// this.writer.write("0");
-								}
+								} 
 							}
 						}
 					}
@@ -761,12 +759,12 @@ public class Robobit {
 				// + totalGuesses);
 				// this.writer.write("\nTotal deceased/total guesses: "
 				// + (double) correctGuesses / (double) totalGuesses);
-				this.writer
-						.write("\nRandom guesses (no corresponding probabilities to evaluate): "
-								+ randomGuesses
-								+ " = "
-								+ (double) randomGuesses
-								/ (double) totalGuesses + "%");
+//				this.writer
+//						.write("\nRandom guesses (no corresponding probabilities to evaluate): "
+//								+ randomGuesses
+//								+ " = "
+//								+ (double) randomGuesses
+//								/ (double) totalGuesses + "%");
 				this.writer.write("\nTotal names predicted as deceased: "
 						+ predictedDeceased);
 			} else {
