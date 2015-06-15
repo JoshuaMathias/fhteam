@@ -561,27 +561,27 @@ public class Robobit {
 				File probabilityFile = new File(probabilityPath);
 				this.generateProbabilityMap(probabilityFile);
 				ArrayList<Double> positionCounts=new ArrayList<Double>();
-//				File countsFile=new File("/home/joshuamonkey/Documentos/BYU/MachineLearning/fhteam/positionCounts.txt");
-//				Scanner countsScan = null;
-//				try {
-//					countsScan = new Scanner(countsFile);
-//				} catch (FileNotFoundException e) {
-//					System.out.println("File " + countsFile.getName() + " not found");
-//				}
-//				double countsTotal=0;
-//				while (countsScan.hasNextLine()) {
-//					Double currentCount=Double.parseDouble(countsScan.nextLine());
-//					if (currentCount==0) {
-//						currentCount=1.0;
-//					}
-//					positionCounts.add(currentCount);
-//					countsTotal+=currentCount;
-//				}
-//				//Turn counts into percentages.
-//				for (int i=0; i<positionCounts.size(); i++) {
-//					positionCounts.set(i, positionCounts.get(i)/countsTotal);
+				File countsFile=new File("/home/joshuamonkey/Documentos/BYU/MachineLearning/fhteam/positionCounts.txt");
+				Scanner countsScan = null;
+				try {
+					countsScan = new Scanner(countsFile);
+				} catch (FileNotFoundException e) {
+					System.out.println("File " + countsFile.getName() + " not found");
+				}
+				double countsTotal=0;
+				while (countsScan.hasNextLine()) {
+					Double currentCount=Double.parseDouble(countsScan.nextLine());
+					if (currentCount==0) {
+						currentCount=1.0;
+					}
+					positionCounts.add(currentCount);
+					countsTotal+=currentCount;
+				}
+				//Turn counts into percentages.
+				for (int i=0; i<positionCounts.size(); i++) {
+					positionCounts.set(i, positionCounts.get(i)/countsTotal);
 //					System.out.println(positionCounts.get(i));
-//				}
+				}
 				this.outFileStr = outputFile;
 				this.listFiles(inFilePath);
 				int correctGuesses = 0;
@@ -619,11 +619,11 @@ public class Robobit {
 							int nameCount=0;
 							for (int i = 0; i < names.size(); i++) {
 								String[] name = names.get(i);
-								if (positionCounts.size()-1<i) {
-									positionCounts.add(0.0);
-								} else if (name[1].equals("1")){
-									positionCounts.set(i, positionCounts.get(i)+1);
-								}
+//								if (positionCounts.size()-1<i) {
+//									positionCounts.add(0);
+//								} else if (name[1].equals("1")){
+//									positionCounts.set(i, positionCounts.get(i)+1);
+//								}
 								probDeceased = 0;
 								// probNotDeceased = 0;
 								
@@ -769,9 +769,9 @@ public class Robobit {
 				this.writer
 						.write("\nTotal number of obituaries that could not be predicted (no corresponding probabilities to evaluate): "
 								+ randomGuesses+"\n");
-				for (int i=0; i<positionCounts.size(); i++) {
-					this.writer.write("Number of deceased names at position "+i+": "+positionCounts.get(i)+"\n");
-				}
+//				for (int i=0; i<positionCounts.size(); i++) {
+//					this.writer.write("Number of deceased names at position "+i+": "+positionCounts.get(i)+"\n");
+//				}
 				this.writer.write("\n");
 			} else {
 				System.out.println("Enamex file path doesn't exist");
