@@ -561,7 +561,7 @@ public class Robobit {
 				File probabilityFile = new File(probabilityPath);
 				this.generateProbabilityMap(probabilityFile);
 				ArrayList<Double> positionCounts=new ArrayList<Double>();
-				File countsFile=new File("/home/joshuamonkey/Documentos/BYU/MachineLearning/fhteam/positionCounts.txt");
+				File countsFile=new File("positionCounts.txt");
 				Scanner countsScan = null;
 				try {
 					countsScan = new Scanner(countsFile);
