@@ -547,6 +547,7 @@ public class Robobit {
 			}
 		}
 	}
+	
 
 	public void guessDecedent(String probabilityPath, String enamexPath,
 			String truthPath, String outputFile, boolean isBase) {
@@ -559,6 +560,28 @@ public class Robobit {
 			if (inFilePath.exists()) {
 				File probabilityFile = new File(probabilityPath);
 				this.generateProbabilityMap(probabilityFile);
+				ArrayList<Double> positionCounts=new ArrayList<Double>();
+//				File countsFile=new File("/home/joshuamonkey/Documentos/BYU/MachineLearning/fhteam/positionCounts.txt");
+//				Scanner countsScan = null;
+//				try {
+//					countsScan = new Scanner(countsFile);
+//				} catch (FileNotFoundException e) {
+//					System.out.println("File " + countsFile.getName() + " not found");
+//				}
+//				double countsTotal=0;
+//				while (countsScan.hasNextLine()) {
+//					Double currentCount=Double.parseDouble(countsScan.nextLine());
+//					if (currentCount==0) {
+//						currentCount=1.0;
+//					}
+//					positionCounts.add(currentCount);
+//					countsTotal+=currentCount;
+//				}
+//				//Turn counts into percentages.
+//				for (int i=0; i<positionCounts.size(); i++) {
+//					positionCounts.set(i, positionCounts.get(i)/countsTotal);
+//					System.out.println(positionCounts.get(i));
+//				}
 				this.outFileStr = outputFile;
 				this.listFiles(inFilePath);
 				int correctGuesses = 0;
@@ -566,11 +589,13 @@ public class Robobit {
 				final double MIN_PROB = 0.0000000001;
 				double probabilityThatNameIsDecedent = 0.0;
 				double probDeceased = 0;
+				double maxProb=0;
 				// double probNotDeceased = 0;
 				Random random = new Random();
 				int randomGuesses = 0;
 				int totalDeceased = 0;
 				int predictedDeceased = 0;
+				
 				for (File file : obitFiles) {
 					getFileObits(file);
 					for (Obit obit : this.obits) {
@@ -583,6 +608,7 @@ public class Robobit {
 						}
 						probabilityThatNameIsDecedent = 0.0;
 						probDeceased = 0;
+						maxProb=0;
 						// probNotDeceased = 0;
 						String[] decedentGuess = null;
 						double currentProbOfName = 0.0;
@@ -590,10 +616,18 @@ public class Robobit {
 							decedentGuess = names.get(0);
 						}
 						if (!isBase) {
+							int nameCount=0;
 							for (int i = 0; i < names.size(); i++) {
+								String[] name = names.get(i);
+								if (positionCounts.size()-1<i) {
+									positionCounts.add(0.0);
+								} else if (name[1].equals("1")){
+									positionCounts.set(i, positionCounts.get(i)+1);
+								}
 								probDeceased = 0;
 								// probNotDeceased = 0;
-								String[] name = names.get(i);
+								
+								
 								// System.out.println("Name: "+name[0]);
 								ArrayList<Double> probabilityForName = new ArrayList<Double>();
 								for (int j = 0; j < wordList.size(); j++) {
@@ -636,8 +670,8 @@ public class Robobit {
 									double currentProb = 0.0;
 									for (int probIter = 0; probIter < probabilityForName
 											.size(); probIter++) {
-										currentProb = probabilityForName
-												.get(probIter);
+//										currentProb = probabilityForName
+//												.get(probIter);
 										// probSum += Math.log(1 - currentProb)
 										// - Math.log(currentProb);
 										// probFalseSum += Math.log(currentProb)
@@ -647,38 +681,44 @@ public class Robobit {
 									}
 									probAverage = probAverage
 											/ probabilityForName.size();
-									if (probAverage > probabilityThatNameIsDecedent) {
-										// if (probAverage >
-										// probabilityThatNameIsDecedent) {
-										currentProbOfName = probAverage;
-										decedentName = name[0];
-										probDeceased = 1 / (1 + Math.pow(
-												Math.E, probSum));
+									if (positionCounts.size()>i) {
+										probAverage=probAverage*positionCounts.get(i);
+									}
+//									System.out.println("Probability of name "+nameCount+": "+probAverage);
+									// if (probAverage > currentProbOfName) {
+									if (probAverage > maxProb) {
+										maxProb = probAverage;
+										decedentGuess = name;
+//										probDeceased = 1 / (1 + Math.pow(
+//												Math.E, probAverage));
 										// probNotDeceased = 1 / (1 +
 										// Math.pow(Math.E, probFalseSum));
 										// System.out.println("deceased: " +
 										// probDeceased
 										// + " not deceased: " +
 										// probNotDeceased);
-										if (probDeceased > currentProbOfName) {
+										
+//										if (probDeceased > currentProbOfName) {
 											// predictedDeceased++;
 											// predictIsDeceased = "1";
-											decedentGuess = name;
+//											decedentGuess = name;
+											// currentProbOfName = probDeceased;
 											// } else if (probDeceased ==
 											// probNotDeceased) {
 											// randomGuesses++;
-										}
+//										}
 										// } else {
 										// predictIsDeceased = random.nextInt(2)
 										// == 1 ? "1"
 										// : "0";
 										// }
 
-										// }
-
 									}
 
+									// }
+
 								}
+								nameCount++;
 							}
 							// if (obit.isDeceased(decedentName)) {
 							// correctGuesses++;
@@ -689,16 +729,18 @@ public class Robobit {
 							// // this.writer.write("0");
 							// }
 						} else {
+							// System.out.println("Is base");
 							if (names.size() > 0) {
 								decedentGuess = names.get(0);
 							}
 						}
 						if (decedentGuess != null) {
-							// if (decedentGuess[1] == "1") {
+							// if (decedentGuess[1].equals("1")) {
 							// totalDeceased++;
 							// }
+							// System.out.println(decedentGuess[1]);
 							totalGuesses++;
-							if (decedentGuess[1] == "1") {
+							if (decedentGuess[1].equals("1")) {
 								correctGuesses++;
 								// this.writer.write("1");
 							}
@@ -726,7 +768,10 @@ public class Robobit {
 						+ totalGuesses);
 				this.writer
 						.write("\nTotal number of obituaries that could not be predicted (no corresponding probabilities to evaluate): "
-								+ randomGuesses);
+								+ randomGuesses+"\n");
+				for (int i=0; i<positionCounts.size(); i++) {
+					this.writer.write("Number of deceased names at position "+i+": "+positionCounts.get(i)+"\n");
+				}
 				this.writer.write("\n");
 			} else {
 				System.out.println("Enamex file path doesn't exist");
